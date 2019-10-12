@@ -61,7 +61,7 @@ export default {
       url: "/scenics/banners"
     }).then(res => {
       const { data } = res.data;
-      // console.log(data);
+      console.log(123);
       this.banners = data;
     });
   }

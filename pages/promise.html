@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+        // 小明老爸说：如果这次考试及格就给他奖励 加鸡腿， 不及格 混合双打。
+        $.ajax({
+            url: "去考试",
+            success(){
+                // 假设的分数
+                var res = [60];
+
+                if(res >= 60){
+                    console.log("加鸡腿")
+                }else{
+                    console.log("混合双打")
+                }
+            }
+        })
+
+        // 小红老爸说：如果这次考试及格就给他奖励 小孩子口红， 不及格 混合双打 * 3。
+        // $.ajax({
+        //     url: "去考试",
+        //     success(){
+        //         // 假设的分数
+        //         var res = 60;
+
+        //         if(res >= 60){
+        //             console.log("小孩子口红")
+        //         }else{
+        //             console.log("混合双打 * 3")
+        //         }
+        //     }
+        // })
+
+        // 创建一个该班级考试的函数，该函数接受两个不一样的结果
+        // resolve: 及格时候的处理的方法
+        // reject: 不及格的处理的方法
+        // function test(resolve, reject){
+        //     setTimeout(() => {
+        //         var res = 60;
+
+        //         if(res >= 60){
+        //             resolve()
+        //         }else{
+        //             reject();
+        //         }
+        //     }, 2000)
+        // }
+
+        // // 小明考试
+        // test(function(){
+        //     console.log("加鸡腿")
+        // }, function(){
+        //     console.log("混合双打")
+        // });
+
+
+        // 1.复习，自己写一个promise对象+++++++++++++++++++++++
+
+        // Promise是一个构造函数，返回一个promise对象，是es6标准下的对象，实现异步的需求
+        // resolve是成功的回调函数
+        // reject是失败的回调函数
+        
+        // 只是考语文
+        function yuwen(){
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    var res = 60;
+
+                    if(res >= 60){
+                        resolve()
+                    }else{
+                        reject();
+                    }
+                }, 2000)
+            })
+        }
+
+        // 1.复习：单个promsie的调用
+        // pro当做axios, test()返回的就是一个promise对象
+        test().then(() => {
+            console.log("加鸡腿")
+        }).catch(() => {
+            console.log("混合双打")
+        })
+        
+        // 数学
+        // function shuxue(){
+        //     return new Promise((resolve, reject) => {
+        //         setTimeout(() => {
+        //             var res = 60;
+
+        //             if(res >= 60){
+        //                 resolve()
+        //             }else{
+        //                 reject();
+        //             }
+        //         }, 2000)
+        //     })
+        // }
+
+        // 数学
+        // function yingyu(){
+        //     return new Promise((resolve, reject) => {
+        //         setTimeout(() => {
+        //             var res = 60;
+
+        //             if(res >= 60){
+        //                 resolve()
+        //             }else{
+        //                 reject();
+        //             }
+        //         }, 2000)
+        //     })
+        // }
+
+        
+        
+        // 2.复习，自己写多个promise对象的调用+++++++++++++++++++++++
+        // 回调地狱 
+        // yuwen().then(() => {
+        //     console.log("加鸡腿");
+
+        //     shuxue().then(() => {
+        //         console.log("加鸡腿,加鸡翅");
+
+        //         yingyu().then(() => {
+        //             console.log("加鸡腿,加鸡翅,加鸡头"); 
+        //         })
+        //     })
+        // })
+
+        // 3.复习，自己使用async和await来优化上面多个的promise的调用+++++++++++++++++++++++
+        // (async await) async声明当前函数是一个异步函数，await等于异步的结果，“await后面接受的是promise对象”
+        
+        // 函数前面添加了async标识后函数中才可以使用await等待promise的调用
+        // var test = async function(){
+        //     // promise对象的then函数返回一个promise
+        //     await yuwen().then(() => {
+        //         console.log("加鸡腿");
+        //     });
+
+        //     await shuxue().then(() => {
+        //         console.log("加鸡腿,加鸡翅");
+        //     })
+
+        //     await yingyu().then(() => {
+        //         console.log("加鸡腿,加鸡翅,加鸡头"); 
+        //     })
+        // }
+
+        // test();
+    </script>
+
+</body>
+</html>
