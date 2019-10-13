@@ -47,6 +47,8 @@ export default {
 
   methods: {
     handleLoginSubmit() {
+        console.log(this.form);
+        
       // 获取到表单数据并且进行验证（固定方法），传递一个参数为回调函数，这个回调函数会返回一个布尔类型的结果。
       this.$refs.form.validate(async valid => {
         // valid是表单验证的结果
@@ -75,16 +77,21 @@ export default {
             // 非常类似于$emit
             this.$store.commit("user/setUserInfo", data);
 
-            console.log(this.$store.state.user.userInfo);
+            console.log(this.$store.state.user.userInfo.user.nickname);
           }
         }
       });
     }
   },
+  // computed:{
+  //     nickname(){
+  //       return this.$store.state.user.userInfo.user.nickname
+  //     }
+  // },
 
-  mounted() {
-    // console.log(this.$store);
-  }
+  // mounted() {
+  //   // console.log(this.$store);
+  // }
 };
 </script>
 

@@ -19,18 +19,20 @@
       <!-- 登录/用户信息 -->
       <el-row type="flex" align="middle">
           <!-- 不存在用户信息展示登录注册链接 -->
-        <nuxt-link to="/user/login" class="account-link" >登录 / 注册</nuxt-link>
-<!-- v-if="$store.state.user.userInfo.token" -->
+        <nuxt-link to="/user/login" class="account-link" v-if="!$store.state.user.userInfo.token">登录 / 注册</nuxt-link>
+
         <!-- 如果用户存在则展示用户信息，用户数据来自store -->
-        <el-dropdown >
+        <el-dropdown v-else>
           <span class="el-dropdown-link">
-            <!-- <img :src="$axios.defaults.baseURL + $store.state.user.userInfo.user.defaultAvatar" />
-            {{$store.state.user.userInfo.user.nickname}} -->
+            <img :src="$axios.defaults.baseURL + $store.state.user.userInfo.user.defaultAvatar" />
+            {{$store.state.user.userInfo.user.nickname}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item @click="handleLogout">退出</el-dropdown-item>
+            <el-dropdown-item>
+              <span @click="handleLogout">退出</span>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
@@ -45,8 +47,12 @@
 export default {
   methods: {
     // 用户退出
-    handleLogout() {}
-  }
+    handleLogout() {
+      // 将vuex中的数据改为空
+      this.$store.commit("user/setUserInfo",{})
+      this.$message.success('您已退出登录')
+    }
+  },
 };
 </script>
 <style scoped lang="less">

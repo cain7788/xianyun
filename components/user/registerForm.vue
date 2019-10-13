@@ -55,7 +55,11 @@ export default {
     data(){
         return {
             // 表单数据
-            form: {},
+            form: {
+                username:"",
+                password:"",
+
+            },
             // 表单规则
             rules: {},
         }
@@ -71,7 +75,9 @@ export default {
         handleRegSubmit(){
            console.log(this.form)
         }
-    }
+    },
+
+    
 }
 </script>
 
