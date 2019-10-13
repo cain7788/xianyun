@@ -1,5 +1,11 @@
 <template>
-  <el-form :model="form" ref="form" :rules="rules" class="form">
+  <el-form
+    :model="form"
+    ref="form"
+    :rules="rules"
+    class="form"
+    v-if="!$store.state.user.userInfo.token"
+  >
     <el-form-item class="form-item" prop="username">
       <el-input placeholder="用户名/手机" v-model="form.username"></el-input>
     </el-form-item>
@@ -14,6 +20,19 @@
 
     <el-button class="submit" type="primary" @click="handleLoginSubmit">登录</el-button>
   </el-form>
+
+  <div v-else class="logined">
+    <span class="login_tip">
+      <img :src="$axios.defaults.baseURL + $store.state.user.userInfo.user.defaultAvatar" />
+      <p>{{$store.state.user.userInfo.user.nickname}}</p>
+      <em>您已登录...</em>
+    </span>
+    <p class="form-text">
+      <nuxt-link to="#">切换子账号</nuxt-link>
+    </p>
+
+    <el-button class="submit" type="primary" @click="handleLoginOut">退出登录</el-button>
+  </div>
 </template>
 
 <script>
@@ -21,10 +40,10 @@ export default {
   data() {
     // 自定义校验规则，检查手机号码是否正确
     var phoneCheck = (rule, value, callback) => {
-        if (!(/^1[3456789]\d{9}$/.test(this.form.username))) {
+      if (!/^1[3456789]\d{9}$/.test(this.form.username)) {
         return callback(new Error("手机格式不正确"));
       } else {
-          callback()
+        callback();
       }
     };
     return {
@@ -36,7 +55,12 @@ export default {
       // 表单规则
       rules: {
         username: [
-          { required: true, message: "请输入手机号",validator: phoneCheck, trigger: "blur" },
+          {
+            required: true,
+            message: "请输入手机号",
+            validator: phoneCheck,
+            trigger: "blur"
+          }
         ],
         password: [
           { required: true, message: "请输入账号密码", trigger: "blur" }
@@ -47,8 +71,7 @@ export default {
 
   methods: {
     handleLoginSubmit() {
-        console.log(this.form);
-        
+
       // 获取到表单数据并且进行验证（固定方法），传递一个参数为回调函数，这个回调函数会返回一个布尔类型的结果。
       this.$refs.form.validate(async valid => {
         // valid是表单验证的结果
@@ -65,24 +88,30 @@ export default {
           console.log(456);
 
           if (res.status === 200) {
-            this.$message.success("登录成功");
-            // this.$router.push("/")
-
             const data = res.data;
-            // 把用户信息token保存到本地，在头部组件中显示用户数据
 
             // vuex不能通过直接赋值方式来修改state的值
             // this.$store.state.user.username = data.user.nickname;
+
+            // 把用户信息token保存到本地，在头部组件中显示用户数据
             // 通过调用mutation下的方法掉修改state的值,commit方法调用mutation的方法
             // 非常类似于$emit
             this.$store.commit("user/setUserInfo", data);
-
-            console.log(this.$store.state.user.userInfo.user.nickname);
+            this.$message.success("登录成功，正在跳转......");
+            setTimeout(() => {
+              this.$router.push("/");
+            }, 1000);
           }
         }
       });
+    },
+
+    handleLoginOut(){
+      this.$store.commit('user/setUserInfo',{})
+      this.$message.success("账号登出成功")
+      this.$router.push('/user/login')
     }
-  },
+  }
   // computed:{
   //     nickname(){
   //       return this.$store.state.user.userInfo.user.nickname
@@ -114,5 +143,25 @@ export default {
 .submit {
   width: 100%;
   margin-top: 10px;
+}
+.logined {
+  padding: 20px;
+}
+.login_tip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  img {
+    width: 30%;
+    // height: 30px;
+    
+  }
+  em {
+      margin-top: 10px;
+      color: #409eff;
+      font-size: 14px;
+    }
 }
 </style>
