@@ -30,6 +30,7 @@
                 @select="handleDestSelect"
                 class="el-autocomplete"
                 v-model="form.destCity"
+                @blur="handleBlur('dest')"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="出发时间">
@@ -57,6 +58,7 @@
 </template>
 
 <script>
+import moment from "moment"
 export default {
     data(){
         return {
@@ -113,7 +115,7 @@ export default {
 
         // 出发城市下拉选择时触发，点击的时候应该将城市名字和城市代码写入到本地data中，将上面请求回来的城市名字和代码保存起来，在这里调用
         handleDepartSelect(item) {
-            console.log(item);
+            // console.log(item);
             // 传入的item是弹出的推荐词的数组中，点击选中的那一项，是上面newData中的一项
             this.form.departCity = item.value
             this.form.departCode = item.sort
@@ -133,35 +135,42 @@ export default {
             this.form[type+"Code"] = this.cities[0].sort
         },
 
+
         // 目标城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
         queryDestSearch(value, cb){
-            cb([
-                {value: 1},
-                {value: 2},
-                {value: 3},
-            ]);
+            // 因为目的地输入框的时间处理和出发地的一样，可以直接调用上面的方法，但是要注意传入的参数要改变
+            this.queryDepartSearch(value, cb)
         },
        
 
-
         // 目标城市下拉选择时触发
         handleDestSelect(item) {
-            
+            // 和出发城市的一样，只是数值要改一下
+            this.form.destCity = item.value
+            this.form.destCode = item.sort
         },
 
         // 确认选择日期时触发
         handleDate(value){
-        
+            // 将获取到的value时间转换成正常的格式后赋值给本地data中的时间
+            this.form.departDate = moment(value).format("YYYY-MM-DD")
         },
 
         // 触发和目标城市切换时触发
         handleReverse(){
-            
+            // 实现效果：将出发地和目的地对应的两个值都分别互换
+            // 先将data中的数据提取出来，不然直接调换会出错
+            const {departCity,departCode,destCity,destCode} = this.form
+            this.form.departCity = destCity
+            this.form.departCode = destCode
+            this.form.destCity = departCity
+            this.form.destCode = departCode
         },
 
         // 提交表单是触发
         handleSubmit(){
+           console.log(this.form);
            
         }
     },
