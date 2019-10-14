@@ -2,8 +2,6 @@ import {Message} from "element-ui";
 
 // context是nuxt下的所有方法，其中包含了$axios的方法
 export default (context) => {
-
-    console.dir(context.$axios);
     
     // 调用$axios的方法进行拦截
     context.$axios.onError(res=>{
