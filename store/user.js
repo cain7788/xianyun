@@ -14,4 +14,22 @@ export const mutations  = {
 }
 
 // 存放的是异步修改state的方法
-export const actions = {}
+export const actions = {
+    // 将登录功能封装,第一个参数store是固定的（调用的方法），第二个参数是传入的数据,根据在登录页中使用的async和await，要在定义函数之前加上async
+    async login(store,data){
+        var res = await this.$axios({
+            url: "/accounts/login",
+            method: "POST",
+            data
+          });
+
+        //   后续操作只写必要的，不是每一个登录操作要执行的在调用方法的地方执行就可以了，
+          if (res.status === 200) {
+            // const data = res.data
+            store.commit("setUserInfo", res.data);
+           
+          }
+        //   将res返回，以便后续操作
+          return res
+    }
+}

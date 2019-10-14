@@ -78,25 +78,15 @@ export default {
         // 当返回的结果为true的时候进行操作
 
         if (valid) {
-          // 提交登录接口
-          //    await这个方法会返回一个结果，而this.$axios返回的结果就是res，我们声明一个res变量来接收
-          var res = await this.$axios({
-            url: "/accounts/login",
-            method: "POST",
-            data: this.form
-          });
-          console.log(456);
+
+          // 调用封装的函数登录,调用这个方法会返回一个值，用变量res接收
+          const res = await this.$store.dispatch("user/login",this.form)
 
           if (res.status === 200) {
-            const data = res.data;
-
-            // vuex不能通过直接赋值方式来修改state的值
-            // this.$store.state.user.username = data.user.nickname;
-
-            // 把用户信息token保存到本地，在头部组件中显示用户数据
-            // 通过调用mutation下的方法掉修改state的值,commit方法调用mutation的方法
-            // 非常类似于$emit
-            this.$store.commit("user/setUserInfo", data);
+          //   // 把用户信息token保存到本地，在头部组件中显示用户数据
+          //   // 通过调用mutation下的方法掉修改state的值,commit方法调用mutation的方法
+          //   // 非常类似于$emit
+            // this.$store.commit("user/setUserInfo", data);
             this.$message.success("登录成功，正在跳转......");
             setTimeout(() => {
               this.$router.push("/");
