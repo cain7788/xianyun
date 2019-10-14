@@ -19,6 +19,8 @@
                 placeholder="请搜索出发城市"
                 @select="handleDepartSelect"
                 class="el-autocomplete"
+                v-model="form.departCity"
+                @blur="handleBlur('depart')"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="到达城市">
@@ -27,6 +29,7 @@
                 placeholder="请搜索到达城市"
                 @select="handleDestSelect"
                 class="el-autocomplete"
+                v-model="form.destCity"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="出发时间">
@@ -34,6 +37,7 @@
                 <el-date-picker type="date" 
                 placeholder="请选择日期" 
                 style="width: 100%;"
+                v-model="form.departDate"
                 @change="handleDate">
                 </el-date-picker>
             </el-form-item>
@@ -61,22 +65,72 @@ export default {
                 {icon: "iconfont iconshuangxiang", name: "往返"}
             ],
             currentTab: 0,
+            form: {
+                departCity:"", //出发城市（注意没有市字）
+                departCode:"", //出发城市代码
+                destCity:"", //到达城市（注意没有市字）
+                destCode:"", //到达城市代码
+                departDate:"", //出发日期
+            },
+
+            cities:[],
         }
     },
     methods: {
-        // tab切换时触发
+        // tab切换时触发 "换"
         handleSearchTab(item, index){
             
         },
         
         // 出发城市输入框获得焦点时触发
-        // value 是选中的值，cb是回调函数，接收要展示的列表
+        // value 是选中的值，cb是回调函数，接收要展示的列表（传递的参数是一个数组）
+        // 数组中的元素必须是一个对象，对象中必须要有value属性
         queryDepartSearch(value, cb){
-            cb([
-                {value: 1},
-                {value: 2},
-                {value: 3},
-            ]);
+            // 在输入出发城市之前先判断输入框是否有值，主要是停止当输入框为空的时候不断请求造成卡顿和错误
+            if(!value){
+                cb([]) // 回调函数的函数是数组，让它为空
+                return;
+            }
+
+            this.$axios({
+                url:"/airs/city?name=" + value,
+            }).then(res=>{
+                const {data} = res.data;
+                console.log(data);
+                
+                // 获取到的data是一个数组，但是返回的数据当中并没有value这个属性
+                // map方法return返回的是数组中的每一项
+                const newData = data.map(v=>{
+                    v.value = v.name.replace("市","")
+                    return v
+                })
+                // 将更新后的数组保存在本地当中,方便后面调用数据
+                this.cities = newData
+                // 执行回调函数打印出推荐的城市
+                cb(newData)
+            })
+        },
+
+        // 出发城市下拉选择时触发，点击的时候应该将城市名字和城市代码写入到本地data中，将上面请求回来的城市名字和代码保存起来，在这里调用
+        handleDepartSelect(item) {
+            console.log(item);
+            // 传入的item是弹出的推荐词的数组中，点击选中的那一项，是上面newData中的一项
+            this.form.departCity = item.value
+            this.form.departCode = item.sort
+            // console.log(this.form);
+        },
+
+        // 如果用户输入后不选择下拉框中的推荐关键词，则要对输入框中的值进行处理
+        // 传入的参数是对应本地data中的输入框的名字，由此来判断调用的是哪一个输入框
+        handleBlur(type){
+            // 当失去焦点的时候，选中下拉框的第一个
+            // 先判断下拉框的数组是否为空
+            if(this.cities.length === 0) return;
+            // this.form.departCity = this.cities[0].value
+            // this.form.departCode = this.cities[0].sort
+            // 将type加入进去
+            this.form[type+ "City"] = this.cities[0].value
+            this.form[type+"Code"] = this.cities[0].sort
         },
 
         // 目标城市输入框获得焦点时触发
@@ -89,10 +143,7 @@ export default {
             ]);
         },
        
-        // 出发城市下拉选择时触发
-        handleDepartSelect(item) {
-            
-        },
+
 
         // 目标城市下拉选择时触发
         handleDestSelect(item) {
@@ -101,7 +152,7 @@ export default {
 
         // 确认选择日期时触发
         handleDate(value){
-           
+        
         },
 
         // 触发和目标城市切换时触发

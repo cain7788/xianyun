@@ -17,11 +17,11 @@
     </el-form-item>
 
     <el-form-item class="form-item" prop="password">
-      <el-input placeholder="密码" type="password" v-model="form.password"></el-input>
+      <el-input placeholder="密码" type="password" v-model="form.password" show-password></el-input>
     </el-form-item>
 
     <el-form-item class="form-item" prop="checkPassword">
-      <el-input placeholder="确认密码" type="password" v-model="form.checkPassword"></el-input>
+      <el-input placeholder="确认密码" type="password" v-model="form.checkPassword" show-password></el-input>
     </el-form-item>
 
     <el-button class="submit" type="primary" @click="handleRegSubmit">注册</el-button>
