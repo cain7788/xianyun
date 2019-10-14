@@ -82,22 +82,21 @@ export default {
   methods: {
     // 发送验证码
     async handleSendCaptcha() {
-            console.log(123);
             
         // 发送验证码要先取到手机号，所以要保证用户已经填写了手机号
         if(!this.form.username){
             this.$message.error("手机号不能为空！")
             return;  //手机号为空的话直接停止执行
         }
-            console.log(456);
-            
-        const res = await this.$axios({
-            url:"/captchas",
-            method:"POST",
-            data:{
-                tel:this.form.username   // 将手机号码发送到服务器
-            }
-        })
+        
+        const res = await this.$store.dispatch("user/sendCaptcha",this.form.username)
+        // const res = await this.$axios({
+        //     url:"/captchas",
+        //     method:"POST",
+        //     data:{
+        //         tel:this.form.username   // 将手机号码发送到服务器
+        //     }
+        // })
 
         const {code} = res.data
         if(code){
@@ -111,14 +110,16 @@ export default {
 
     // 注册
     handleRegSubmit() {
-        const {checkPassword,...props} = this.form
+    const {checkPassword,...props} = this.form
     this.$refs.form.validate(async valid =>{
         if(valid){
-            var res = await this.$axios({
-                url:"/accounts/register",
-                method:"POST",
-                data:props
-            })
+            // var res = await this.$axios({
+            //     url:"/accounts/register",
+            //     method:"POST",
+            //     data:props
+            // })
+            // 调用封装在vuex中的方法发送注册请求
+            const res = await this.$store.dispatch("user/register",props)
 
             if(res.status === 200){
                 this.$message.success('注册成功')

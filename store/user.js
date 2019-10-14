@@ -1,3 +1,4 @@
+
 export const state = () => {
     return {
         userInfo: {}
@@ -25,11 +26,36 @@ export const actions = {
 
         //   后续操作只写必要的，不是每一个登录操作要执行的在调用方法的地方执行就可以了，
           if (res.status === 200) {
-            // const data = res.data
+
             store.commit("setUserInfo", res.data);
            
           }
         //   将res返回，以便后续操作
           return res
+    },
+
+
+    // 封装发送验证码的方法
+    sendCaptcha(store,data){
+        const res = this.$axios({
+            url:"/captchas",
+            method:"POST",
+            data:{
+                tel:data   // 将手机号码发送到服务器
+            }
+        })
+        
+        return res
+    },
+
+    // 封装注册功能
+    register(store,data){
+        var res = this.$axios({
+                url:"/accounts/register",
+                method:"POST",
+                data
+        })
+
+        return res
     }
 }
