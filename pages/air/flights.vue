@@ -1,10 +1,13 @@
 <template>
   <section class="contianer">
-    <el-row type="flex" justify="space-between">
+    <div v-if="flightsList.flights.length === 0 && !loading" class="no_flights">该航班暂无数据</div>
+    <el-row type="flex" justify="space-between" v-if="flightsList.flights.length">
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <div></div>
+        <div>
+            <FlightsFilters :data="flightsList"/>
+        </div>
 
         <!-- 航班头部布局 -->
         <div>
@@ -40,30 +43,35 @@
 import moment from "moment";
 import FlightsListHead from "@/components/air/flightsListHead.vue";
 import FlightsItem from "@/components/air/flightsItem.vue";
+import FlightsFilters from "@/components/air/flightsFilters.vue";
 
 export default {
   components: {
     FlightsListHead,
-    FlightsItem
+    FlightsItem,
+    FlightsFilters
   },
   data() {
     return {
       flightsList: {
-          flights: []
+        flights: [],
+        info:{},
+        options:[],
       },
       pageIndex: 1,
       pageSize: 5,
+      loading: true
     };
   },
 
-  computed:{
-      dataList(){
-          const arr = this.flightsList.flights.slice(
-              (this.pageIndex - 1) * this.pageSize,
-              this.pageIndex * this.pageSize,
-          )
-          return arr
-      }
+  computed: {
+    dataList() {
+      const arr = this.flightsList.flights.slice(
+        (this.pageIndex - 1) * this.pageSize,
+        this.pageIndex * this.pageSize
+      );
+      return arr;
+    }
   },
 
   mounted() {
@@ -77,21 +85,21 @@ export default {
       const data = res.data;
       this.flightsList = data;
 
-    // 获得总数据条数
-    // this.dataList.slice(0,pageSize)
+      // 请求完毕后则显示页面
+      this.loading = false;
     });
   },
 
-  methods:{
+  methods: {
     //   当切换每页显示总条数的时候触发
-      handleSizeChange(val){
-          this.pageSize = val
-      },
+    handleSizeChange(val) {
+      this.pageSize = val;
+    },
 
     // 当页面页码改变的时候触发
-      handleCurrentChange(val){
-          this.pageIndex = val
-      }
+    handleCurrentChange(val) {
+      this.pageIndex = val;
+    }
   }
 };
 </script>
@@ -109,5 +117,12 @@ export default {
 
 .aside {
   width: 240px;
+}
+
+.no_flights {
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  color: #aaa;
 }
 </style>
