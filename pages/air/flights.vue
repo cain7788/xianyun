@@ -1,17 +1,17 @@
 <template>
   <section class="contianer">
-    <div v-if="flightsList.flights.length === 0 && !loading" class="no_flights">该航班暂无数据</div>
-    <el-row type="flex" justify="space-between" v-if="flightsList.flights.length">
+    <el-row type="flex" justify="space-between">
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
         <div>
-            <FlightsFilters :data="flightsList"/>
+          <FlightsFilters :data="flightsListCopy" @setDataList="setDataList" />
         </div>
 
         <!-- 航班头部布局 -->
         <div>
-          <FlightsListHead />
+          <div v-if="flightsList.flights.length === 0 && !loading" class="no_flights">该航班暂无数据</div>
+          <FlightsListHead v-else />
         </div>
 
         <!-- 航班信息 -->
@@ -53,10 +53,15 @@ export default {
   },
   data() {
     return {
+      flightsListCopy: {
+        flights: [],
+        info: {},
+        options: []
+      },
       flightsList: {
         flights: [],
-        info:{},
-        options:[],
+        info: {},
+        options: []
       },
       pageIndex: 1,
       pageSize: 5,
@@ -75,22 +80,33 @@ export default {
   },
 
   mounted() {
-    // console.log(this.$route.query);
+    this.getData();
+    // this.$axios({
+    //   url: "/airs",
+    //   params: this.$route.query
+    // }).then(res => {
+    //   console.log(res);
+    //   const data = res.data;
+    //   this.flightsList = data;
 
-    this.$axios({
-      url: "/airs",
-      params: this.$route.query
-    }).then(res => {
-      console.log(res);
-      const data = res.data;
-      this.flightsList = data;
-
-      // 请求完毕后则显示页面
-      this.loading = false;
-    });
+    //   // 请求完毕后则显示页面
+    //   this.loading = false;
+    // });
   },
 
   methods: {
+    getData() {
+      this.$axios({
+        url: "/airs",
+        params: this.$route.query
+      }).then(res => {
+        const data = res.data;
+        this.flightsList = data;
+        this.flightsListCopy = { ...data };
+        // 请求完毕后则显示页面
+        this.loading = false;
+      });
+    },
     //   当切换每页显示总条数的时候触发
     handleSizeChange(val) {
       this.pageSize = val;
@@ -99,6 +115,28 @@ export default {
     // 当页面页码改变的时候触发
     handleCurrentChange(val) {
       this.pageIndex = val;
+    },
+
+    // 接收筛选组件传回来的新数组，更换当前获取到的数组进行渲染刷新
+    setDataList(arr) {
+      console.log(arr);
+      if (!arr) {
+        this.flightsList = { ...this.flightsListCopy };
+        return;
+      }
+      // 航班信息数组更换,数组长度重新计算
+      this.flightsList.flights = arr;
+      // this.flightsList.flights = this.$store.state.flights.dataList
+      // 更换后默认显示第一页
+      this.pageIndex = 1;
+
+      //   // 再次更新分页显示的数据
+      //   this.dataList = this.flightsList.flights.slice(
+      //     (this.pageIndex - 1) * this.pageSize,
+      //     this.pageIndex * this.pageSize
+      //   );
+
+      //   this.getData()
     }
   }
 };

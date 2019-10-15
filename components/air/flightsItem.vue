@@ -85,7 +85,6 @@ export default {
             // 将两个时间都转换成分钟的时间单位进行计算,注意，数组当中的每一项都是字符串，要转换成数值计算，但是乘法会自动转换成数值。
             let depVal = dep[0] * 60 + (+dep[1])    // 出发时间
             let arrVal = arr[0] * 60 + (+arr[1])   // 到达时间
-            console.log(depVal,arrVal);
             
             // 加入判断条件，如果从今天飞到了明天，则到达的分钟数会小于出发的分钟数
             if(depVal > arrVal){
