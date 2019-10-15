@@ -103,7 +103,6 @@ export default {
         url: "/airs/city?name=" + value
       }).then(res => {
         const { data } = res.data;
-        console.log(data);
 
         // 获取到的data是一个数组，但是返回的数据当中并没有value这个属性
         // map方法return返回的是数组中的每一项
@@ -202,10 +201,10 @@ export default {
       if (!valid) return;
 
       //    通过push传递对象的方法，将一组参数传进地址栏当中
-      //  this.$router.push({
-      //      path:"/air/flights",
-      //      query:this.form
-      //  })
+       this.$router.push({
+           path:"/air/flights",
+           query:this.form
+       })
     }
   },
   mounted() {}
