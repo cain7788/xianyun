@@ -22,22 +22,20 @@
 
         <div class="history">
             <h5>历史查询</h5>
-            <nuxt-link 
-            to="#" 
-            v-for="(item,index) in searchForm" 
-            :key="index"
-            >
                 <el-row type="flex" 
                 justify="space-between" 
                 align="middle"
-                class="history-item">
+                class="history-item"
+                v-for="(item,index) in $store.state.flights.searchForm" 
+                :key="index">
                     <div class="air-info">
                         <div class="to-from">{{item.departCity}} - {{item.destCity}}</div>
                         <p>{{item.departDate}}</p>
                     </div>
-                    <span @click="handleChangeRoute(item)">选择</span>
+                    <nuxt-link :to="`/air/flights?departCity=${item.departCity}&departCode=${item.departCode}&destCity=${item.destCity}&destCode=${item.destCode}&departDate=${item.departDate}`">
+                    <span>选择</span>
+                    </nuxt-link>
                 </el-row>
-            </nuxt-link>
         </div>
     </div>
 </template>
@@ -57,16 +55,6 @@ export default {
         // console.log(searchForm);
     },
 
-    methods:{
-        handleChangeRoute(item){
-            console.log(item);
-            
-            this.$router.push({
-                path:"/air/flights",
-                query:item
-            })
-        }
-    }
 }
 </script>
 

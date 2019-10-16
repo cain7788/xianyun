@@ -13,9 +13,9 @@ export const mutations = {
 
   // 搜索历史记录添加
   setSearchForm(state, data) {
-    if (state.searchForm === []) {
-        state.searchForm = data
-    }
-    state.searchForm.push(data);
+    // if (state.searchForm === []) {
+    //     state.searchForm = data
+    // }
+    state.searchForm.unshift(data);
   }
 };

@@ -43,11 +43,13 @@
                             ￥{{seat.org_settle_price_child}}
                         </el-col>
                         <el-col :span="3" class="choose-button">
+                            <nuxt-link :to="`/air/order?id=${item.id}&seat_xid=${seat.seat_xid}`">
                             <el-button 
                             type="warning" 
                             size="mini">
                             选定
                             </el-button>
+                            </nuxt-link>
                             <p>剩余：{{seat.discount}}</p>
                         </el-col>
                     </el-row>

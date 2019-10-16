@@ -25,7 +25,7 @@
               :page-sizes="[5, 10, 15, 20]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="flightsList.flights.length"
+              :total="flightsListCopy.flights.length"
             ></el-pagination>
           </div>
         </div>
@@ -84,17 +84,13 @@ export default {
 
   mounted() {
     this.getData();
-    // this.$axios({
-    //   url: "/airs",
-    //   params: this.$route.query
-    // }).then(res => {
-    //   console.log(res);
-    //   const data = res.data;
-    //   this.flightsList = data;
 
-    //   // 请求完毕后则显示页面
-    //   this.loading = false;
-    // });
+  },
+  // 当路由改变的时候重新加载页面
+  watch:{
+    $route(){
+      this.getData()
+    }
   },
 
   methods: {
@@ -138,8 +134,6 @@ export default {
       //     (this.pageIndex - 1) * this.pageSize,
       //     this.pageIndex * this.pageSize
       //   );
-
-      //   this.getData()
     }
   }
 };
