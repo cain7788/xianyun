@@ -13,7 +13,11 @@ export default (context) => {
                 if(statusCode === 400){
                     Message.warning(message)
                 }
-            
+                // 当返回的错误码为403的时候跳转到登陆页
+                if(statusCode === 403){
+                    // context下有一个重定向的方法
+                    context.redirect("/user/login")
+                }
     })
 }
 

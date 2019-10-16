@@ -44,7 +44,7 @@ export const actions = {
                 tel:data   // 将手机号码发送到服务器
             }
         })
-        
+        // 返回的是一个promise
         return res
     },
 

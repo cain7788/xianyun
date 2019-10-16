@@ -20,6 +20,11 @@
             </p>
         </div>
 
+        <!-- 天气预报 -->
+        <div>
+            
+        </div>
+
         <div class="history">
             <h5>历史查询</h5>
                 <el-row type="flex" 

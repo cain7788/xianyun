@@ -99,7 +99,10 @@ export default {
     handleLoginOut(){
       this.$store.commit('user/setUserInfo',{})
       this.$message.success("账号登出成功")
-      this.$router.push('/user/login')
+
+      // this.$router.push('/user/login')
+      // 如果是在页面操作的时候要求登陆,则登陆后应该是返回之前的页面
+      this.$router.back('/')
     }
   }
   // computed:{
