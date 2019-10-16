@@ -34,7 +34,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
-        <FlightsAside />
+        <FlightsAside @reload="reload"/>
       </div>
     </el-row>
   </section>
@@ -105,6 +105,11 @@ export default {
         // 请求完毕后则显示页面
         this.loading = false;
       });
+    },
+
+    // 当清空历史记录后传回的方法调用刷新
+    reload(){
+      this.getData()
     },
     //   当切换每页显示总条数的时候触发
     handleSizeChange(val) {

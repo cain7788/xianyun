@@ -40,7 +40,7 @@
                             <span>{{seat.group_name}}</span> | {{seat.supplierName}}
                         </el-col>
                         <el-col :span="5" class="price">
-                            ￥{{seat.org_settle_price_child}}
+                            ￥{{seat.org_settle_price}}
                         </el-col>
                         <el-col :span="3" class="choose-button">
                             <nuxt-link :to="`/air/order?id=${item.id}&seat_xid=${seat.seat_xid}`">

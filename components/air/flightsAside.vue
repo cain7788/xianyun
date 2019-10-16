@@ -21,18 +21,49 @@
         </div>
 
         <!-- 天气预报 -->
-        <div>
-            
-        </div>
+
+        <el-row class="weather">
+            <table>
+                <caption>{{citys}}天气实况</caption>
+                <tbody>
+                    <tr>
+                        <td rowspan="4" width="40%">
+                            <div class="icon"><img :src="`${searchInfo.Icon}`" width="60"/></div>
+                            <p class="title">{{searchInfo.dayTemp}}℃ {{searchInfo.weather}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left" width="60%">
+                            <p>{{searchInfo.wind}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">
+                            <p>相对湿度：{{searchInfo.humidity}}%</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">
+                            <p>空气质量(pm2.5)：<span class="level-2">{{searchInfo.pm25}}</span></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </el-row>
 
         <div class="history">
-            <h5>历史查询</h5>
+            <div class="history_header">
+                <h5>历史查询</h5>
+                <span @click="handleDetHistory">清空历史</span>
+            </div>
+                
                 <el-row type="flex" 
                 justify="space-between" 
                 align="middle"
                 class="history-item"
                 v-for="(item,index) in $store.state.flights.searchForm" 
-                :key="index">
+                :key="index"
+                 v-if="`${$store.state.flights.searchForm}`">
                     <div class="air-info">
                         <div class="to-from">{{item.departCity}} - {{item.destCity}}</div>
                         <p>{{item.departDate}}</p>
@@ -41,6 +72,9 @@
                     <span>选择</span>
                     </nuxt-link>
                 </el-row>
+                <div class="nohistory" v-else>
+                    暂无历史记录
+                </div>
         </div>
     </div>
 </template>
@@ -49,16 +83,46 @@
 export default {
     data(){
         return {
-            searchForm:[]
-        }
-    },
+            searchForm:[],
+            searchInfo:{},
+            citys:"",
+            }
+        },
+    
 
     mounted(){
-        console.log(this.searchForm);
-        
+        // 取到本地当中的历史搜索信息
         this.searchForm = this.$store.state.flights.searchForm
-        // console.log(searchForm);
+
+        // 获取到地址栏中的数据
+        this.searchInfo = this.$route.query
+        // console.log(this.searchInfo);
+
+        // 请求回天气数据
+
+        this.$axios({
+            url:"http://api.ip138.com/weather/?code=440100&token=14be5f462053edbd27a1fe6243cccea4",
+        }).then(res=>{
+            const {data} = res.data
+
+            const {city} = {...res.data}
+            this.citys = city
+            this.searchInfo = data
+            // console.log(this.searchInfo.data);
+
+        })
+        
+        
     },
+
+    methods:{
+        // 点击删除历史记录
+        handleDetHistory(){
+            // 调用vuex方法删除掉vuex中的数据
+            this.$store.commit("flights/delSearchForm",null)
+            this.$emit("reload")
+        }
+    }
 
 }
 </script>
@@ -93,13 +157,24 @@ export default {
     border:1px #ddd solid;
     padding:10px;
     margin-top:10px;
-
-    h5{
+    .history_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        border-bottom:1px #eee solid;
+        span {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+        h5{
         font-size: 16px;
         font-weight: normal;
-        padding-bottom: 10px;
-        border-bottom:1px #eee solid;
+        
     }
+    }
+    
 
     .history-item{
         padding:10px 0;
@@ -129,5 +204,14 @@ export default {
             cursor: pointer;
         }
     }
+}
+
+// 天气模块样式
+.weather {
+    padding: 5px;
+    background-color: rgb(247, 247, 247);
+    font-size: 14px;
+    color: rgb(78, 162, 196);
+    margin-top: 10px;
 }
 </style>
