@@ -200,6 +200,9 @@ export default {
 
       if (!valid) return;
 
+      // 提交表单的时候将数据保存到本地当中，以便调取渲染侧边栏渲染历史记录
+      this.$store.commit("flights/setSearchForm",this.form)
+
       //    通过push传递对象的方法，将一组参数传进地址栏当中
        this.$router.push({
            path:"/air/flights",
