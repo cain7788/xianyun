@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import {computeTime} from '@/utils/utils'
 export default {
     props:{
         // 总金额
@@ -51,44 +52,12 @@ export default {
             default: 0
         }
     },
-//   props: {
-//     data: {
-//       type: Object,
-//       default: {},
-//       seat_infos: {}
-//     }
-//     // infoData: {},
-//     // rankTime: ""
-//   },
   data() {
     return {
       data: {
         seat_infos: {},
       },
-      allPrice:0,
     };
-  },
-    computed:{
-    //   当添加乘机人的时候计算总费用
-      allPrice(){
-        // 保险总价
-        // 循环过滤得出选中保险的金额
-        var insurancePrice = 0
-        this.insurances.forEach(v=>{
-            switch (v) {
-            // 第一项是"航空意外险"
-			case 1 : insurancePrice += this.details.insurances[0].price
-            break;
-            // 第二项是"航空延误险"
-            case 2 : insurancePrice += this.details.insurances[1].price
-            }
-        })
-        //   机票总价格
-          const price = this.users.length * (+this.details.base_price + insurancePrice)
-        //   console.log(price);
-          this.$store.commit("order/saveAllPrice",price)
-          return price
-      }
   },
 
   mounted() {
@@ -109,25 +78,8 @@ export default {
 
   computed: {
     rankTime() {
-      // 数据还未请求回来
-      if (!this.data.dep_time) return "";
-
-      // 转化为分钟
-      const dep = this.data.dep_time.split(":");
-      const arr = this.data.arr_time.split(":");
-      const depVal = dep[0] * 60 + +dep[1];
-      const arrVal = arr[0] * 60 + +arr[1];
-
-      // 到达时间相减得到分钟
-      let dis = arrVal - depVal;
-
-      // 如果是第二天凌晨时间段，需要加24小时
-      if (dis < 0) {
-        dis = arrVal + 24 * 60 - depVal;
-      }
-
-      // 得到相差时间
-      return `${Math.floor(dis / 60)}时${dis % 60}分`;
+      // 调用utils中的方法计算飞行相隔时间
+      return computeTime(this.data.dep_time,this.data.arr_time)
     }
   }
 };

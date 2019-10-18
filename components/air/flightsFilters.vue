@@ -70,6 +70,7 @@
       筛选：
       <el-button type="primary" round plain size="mini" @click="handleFiltersCancel">撤销</el-button>
     </div>
+    <input type="hidden" :value="newCondition" />
   </div>
 </template>
 
@@ -100,66 +101,77 @@ export default {
         { size: "M", name: "中" },
         { size: "S", name: "小" }
       ],
-      newCondition:{
+
+      condition: {
         org_airport_name: "", // 机场
         dep_time: [], // 出发时间
         airline_name: "", // 航空公司
-        plane_size: "", // 机型大小
-      },
+        plane_size: "" // 机型大小
+      }
     };
   },
   mounted() {},
-  watch:{
-    newCondition:{
-      deep:true,
-      handler:function(){
+  computed: {
+    newCondition() {
+      if (this.condition.dep_time.length === 0) {
+        // const {dep_time,...props} = this.condition
+        // console.log(this.data.flights);
+        const arr = this.data.flights.filter(v => {
+            return (this.condition.org_airport_name === v.org_airport_name && this.condition.airline_name === v.airline_name && this.condition.plane_size === v.plane_size)
+        });
+        console.log("123",arr);
+        return arr;
+      } else {
+        const [from, to] = this.condition.dep_time.split(",");
 
-      var obj = {}
-      for(var key in this.newCondition){
-        console.log(key,this.newCondition[key]);
-        obj={...obj,key:this.newCondition.key}
-        // if(this.newCondition[key]){
-        //     obj={...obj,key:this.newCondition.key}
-        // }
-      }
-      console.log(obj);
-      
-
-        // if(this.dep_time === []){
-
-        // } else {
-        //   const [from, to] = this.dep_time.split(",");
-
-        //   const timeArr = this.data.flights.filter(v => {
-        //     const start = +v.dep_time.split(":")[0];
-        //     return start >= from && start < to;
-        //   });
-        //   // timeArr是已经通过时间筛选过后的数组数据
-        // }
-          
-
-
-        // const arr = this.newCondition.filter(item => {
-        //   // v中有四项数据org_airport_name，airline_name
-          
-          
-
-        //   return 
-
-        // })
+        const timeArr = this.data.flights.filter(v => {
+          const start = +v.dep_time.split(":")[0];
+          return start >= from && start < to;
+        });
+        // timeArr是已经通过时间筛选过后的数组数据
+        const arr = this.data.flights.filter(v => {
+          return (
+            timeArr.org_airport_name === v.org_airport_name &&
+            timeArr.airline_name === v.airline_name &&
+            timeArr.plane_size === v.plane_size
+          );
+        });
+        console.log("456",arr);
         
+        return arr;
       }
+      
+      return arr;
+      // deep:true,
+      // handler:function(){
+
+      // var obj = {}
+      // for(var key in this.newCondition){
+      //   console.log(key,this.newCondition[key]);
+      //   obj={...obj,key:this.newCondition.key}
+      //   // if(this.newCondition[key]){
+      //   //     obj={...obj,key:this.newCondition.key}
+      //   // }
+      // }
+
+      // const arr = this.newCondition.filter(item => {
+      //   // v中有四项数据org_airport_name，airline_name
+
+      //   return
+
+      // })
     }
   },
   methods: {
     // 选择机场时候触发
     handleAirport(value) {
-        if(!value){
-          this.newCondition.org_airport_name = ""
-          return
-        }
-        this.newCondition.org_airport_name = value
-        console.log("机场",this.newCondition);
+      // if(!value){
+      //   this.newCondition.org_airport_name = ""
+      //   return
+      // }
+      this.condition.org_airport_name = value;
+      console.log(this.condition);
+
       // if (!value) {
       //   this.$emit("setDataList",false);
       //   return;
@@ -175,56 +187,58 @@ export default {
 
     // 选择出发时间时候触发
     handleFlightTimes(value) {
-      if(!value){
-          return
-        }
-        this.newCondition.dep_time = value
+      // if(!value){
+      //     return
+      //   }
+      this.condition.dep_time = value;
 
-      if (!value) {
-        this.$emit("setDataList",false);
-        return;
-      }
-      // console.log(value); // [6.12]
-      // 将value中的两个时间解构出来
-      const [from, to] = value.split(",");
+      // if (!value) {
+      //   this.$emit("setDataList",false);
+      //   return;
+      // }
+      // // console.log(value); // [6.12]
+      // // 将value中的两个时间解构出来
+      // const [from, to] = value.split(",");
 
-      const arr = this.data.flights.filter(v => {
-        const start = +v.dep_time.split(":")[0];
-        return start >= from && start < to;
-      });
-      this.$emit("setDataList", arr);
+      // const arr = this.data.flights.filter(v => {
+      //   const start = +v.dep_time.split(":")[0];
+      //   return start >= from && start < to;
+      // });
+      // this.$emit("setDataList", arr);
     },
 
     // 选择航空公司时候触发
     handleCompany(value) {
-      if(!value){
-          this.newCondition.airline_name = ""
-          return
-        }
-        this.newCondition.airline_name = value
-        console.log("公司",this.newCondition);
-    //  if (!value) {
-    //     this.$emit("setDataList",false);
-    //     return;
-    //   }
+      // if(!value){
+      //     this.newCondition.airline_name = ""
+      //     return
+      //   }
+      this.condition.airline_name = value;
+      console.log("公司", this.condition);
 
-    //   // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
-    //   const arr = this.data.flights.filter(v => {
-    //     // 将以下满足条件的每一项存储到新的数组（arr）当中
-    //     return v.airline_name === value;
-    //   });
-    //   // 将数据通过$emit传给父组件
-    //   this.$emit("setDataList", arr);
+      //  if (!value) {
+      //     this.$emit("setDataList",false);
+      //     return;
+      //   }
+
+      //   // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
+      //   const arr = this.data.flights.filter(v => {
+      //     // 将以下满足条件的每一项存储到新的数组（arr）当中
+      //     return v.airline_name === value;
+      //   });
+      //   // 将数据通过$emit传给父组件
+      //   this.$emit("setDataList", arr);
     },
 
     // 选择机型时候触发
     handleAirSize(value) {
-      if(!value){
-          this.newCondition.plane_size = ""
-          return
-        }
-        this.newCondition.plane_size = value
-        console.log("机型",this.newCondition);
+      // if(!value){
+      //     this.newCondition.plane_size = ""
+      //     return
+      //   }
+      this.condition.plane_size = value;
+      console.log("机型", this.condition);
+
       // if (!value) {
       //   this.$emit("setDataList",false);
       //   return;
@@ -242,11 +256,11 @@ export default {
 
     // 撤销条件时候触发
     handleFiltersCancel() {
-        this.airport=""
-        this.flightTimes=""
-        this.company=""
-        this.airSize=""
-        this.$emit("setDataList",false);
+      this.airport = "";
+      this.flightTimes = "";
+      this.company = "";
+      this.airSize = "";
+      this.$emit("setDataList", false);
     }
   }
 };

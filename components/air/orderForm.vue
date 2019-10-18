@@ -73,7 +73,9 @@
 export default {
   data() {
     return {
-      details: {},
+      details: {
+        seat_infos:[],
+      },
       // 保险信息
       insurances: [],
       // 用户信息
@@ -103,14 +105,14 @@ export default {
         this.insurances.forEach(v=>{
             switch (v) {
             // 第一项是"航空意外险"
-			case 1 : insurancePrice += this.details.insurances[0].price
+			      case 1 : insurancePrice += this.details.insurances[0].price
             break;
             // 第二项是"航空延误险"
             case 2 : insurancePrice += this.details.insurances[1].price
             }
         })
         //   机票总价格
-          const price = this.users.length * (+this.details.base_price + insurancePrice + this.details.airport_tax_audlet)
+          const price = this.users.length * (+this.details.seat_infos.org_settle_price + insurancePrice + this.details.airport_tax_audlet)
         //   console.log(price);
         // 将数据传递给父组件
           this.$emit("setAllPrice", price)
