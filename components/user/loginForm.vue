@@ -89,7 +89,8 @@ export default {
             // this.$store.commit("user/setUserInfo", data);
             this.$message.success("登录成功，正在跳转......");
             setTimeout(() => {
-              this.$router.push("/");
+              // 如果是在页面操作的时候要求登陆,则登陆后应该是返回之前的页面
+              this.$router.back('/')
             }, 1000);
           }
         }
@@ -101,8 +102,7 @@ export default {
       this.$message.success("账号登出成功")
 
       // this.$router.push('/user/login')
-      // 如果是在页面操作的时候要求登陆,则登陆后应该是返回之前的页面
-      this.$router.back('/')
+
     }
   }
   // computed:{

@@ -12,7 +12,7 @@ export const state = () => {
       state.orderForm = data;
     },
 
-    // 保存飞行耗时
+    // 保存总价格
     saveAllPrice(state, price){
         state.allPrice = price;
     }

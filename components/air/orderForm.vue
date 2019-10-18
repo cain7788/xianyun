@@ -220,9 +220,14 @@ export default {
         data
       })
         .then(res => {
-          console.log(res);
+          const {data} = res.data;
 
-          this.$router.push("/air/pay");
+          this.$router.push({
+            path:"/air/pay",
+            query:{
+              id:data.id
+            }
+          });
         })
         .catch(err => {
           const { message } = err.response.data;
@@ -233,6 +238,9 @@ export default {
             type: "warning"
           });
         });
+        
+        // 将总价保存到vuex中
+        this.$store.commit("order/saveAllPrice",this.allPrice)
     }
   }
 };
