@@ -9,7 +9,7 @@
         <h4>微信支付</h4>
         <el-row type="flex" justify="space-between" align="middle" class="pay-qrcode">
           <div class="qrcode">
-            <!-- 二维码 -->
+            <!-- 二维码，调用Qrcode插件的html代码 -->
             <canvas id="qrcode-stage"></canvas>
             <p>请使用微信扫一扫</p>
             <p>扫描二维码支付</p>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import QrCode from "qrcode"
 export default {
   data() {
     return {
@@ -31,7 +32,8 @@ export default {
     };
   },
   mounted() {
-    // 将vuex中的机票总价获取到
+
+    // 将vuex中的机票总价获取到,使用vuex取机票价格的方法
     // this.allPrice = this.$store.state.order.allPrice;
     const {id} = this.$route.query
     // vuex中的信息存储调用都是需要时间的，而渲染数据的速度大于读取的速度就会导致取到的数据为undefined
@@ -42,11 +44,21 @@ export default {
         headers: {
             Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
         },
-    }).then(res=>{
-        // console.log(res);
+    })
+        // 结果中的payInfo字段就是付款链接，需要根据链接生成二维码
         this.order = res.data
         
-    })
+        // 获取到数据后将链接生成二维码
+        const canvas  = document.querySelector("#qrcode-stage")
+        QrCode.toCanvas(canvas ,this.order.payInfo.code_url,{
+            width:200
+        })
+
+
+    // 将二维码渲染出来：需要调用二维码生成的插件。
+
+
+
     }, 20);
     
     
