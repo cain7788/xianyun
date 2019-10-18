@@ -99,25 +99,91 @@ export default {
         { size: "L", name: "大" },
         { size: "M", name: "中" },
         { size: "S", name: "小" }
-      ]
+      ],
+      newCondition:{
+        org_airport_name: "", // 机场
+        dep_time: [], // 出发时间
+        airline_name: "", // 航空公司
+        plane_size: "", // 机型大小
+      },
     };
   },
   mounted() {},
+  watch:{
+    newCondition:{
+      deep:true,
+      handler:function(){
 
+      var obj = {}
+      for(var key in this.newCondition){
+        console.log(key,this.newCondition[key]);
+        obj={...obj,key:this.newCondition.key}
+        // if(this.newCondition[key]){
+        //     obj={...obj,key:this.newCondition.key}
+        // }
+      }
+      console.log(obj);
+      
+
+        // if(this.dep_time === []){
+
+        // } else {
+        //   const [from, to] = this.dep_time.split(",");
+
+        //   const timeArr = this.data.flights.filter(v => {
+        //     const start = +v.dep_time.split(":")[0];
+        //     return start >= from && start < to;
+        //   });
+        //   // timeArr是已经通过时间筛选过后的数组数据
+        // }
+          
+
+
+        // const arr = this.newCondition.filter(item => {
+        //   // v中有四项数据org_airport_name，airline_name
+          
+          
+
+        //   return 
+
+        // })
+        
+      }
+    }
+  },
   methods: {
     // 选择机场时候触发
     handleAirport(value) {
-      // 循环遍历传过来的航班信息列表，找到机场相同的航班信息存储在新的数组当中，最后将这个数组返回给父组件，替换掉要渲染的数组
-      const arr = this.data.flights.filter(v => {
-        // 将以下满足条件的每一项存储到新的数组（arr）当中
-        return v.org_airport_name === value;
-      });
-      // 将数据通过$emit传给父组件
-      this.$emit("setDataList", arr);
+        if(!value){
+          this.newCondition.org_airport_name = ""
+          return
+        }
+        this.newCondition.org_airport_name = value
+        console.log("机场",this.newCondition);
+      // if (!value) {
+      //   this.$emit("setDataList",false);
+      //   return;
+      // }
+      // // 循环遍历传过来的航班信息列表，找到机场相同的航班信息存储在新的数组当中，最后将这个数组返回给父组件，替换掉要渲染的数组
+      // const arr = this.data.flights.filter(v => {
+      //   // 将以下满足条件的每一项存储到新的数组（arr）当中
+      //   return v.org_airport_name === value;
+      // });
+      // // 将数据通过$emit传给父组件
+      // this.$emit("setDataList", arr);
     },
 
     // 选择出发时间时候触发
     handleFlightTimes(value) {
+      if(!value){
+          return
+        }
+        this.newCondition.dep_time = value
+
+      if (!value) {
+        this.$emit("setDataList",false);
+        return;
+      }
       // console.log(value); // [6.12]
       // 将value中的两个时间解构出来
       const [from, to] = value.split(",");
@@ -131,36 +197,47 @@ export default {
 
     // 选择航空公司时候触发
     handleCompany(value) {
-     
+      if(!value){
+          this.newCondition.airline_name = ""
+          return
+        }
+        this.newCondition.airline_name = value
+        console.log("公司",this.newCondition);
+    //  if (!value) {
+    //     this.$emit("setDataList",false);
+    //     return;
+    //   }
 
-      // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
-      const arr = this.data.flights.filter(v => {
-        // 将以下满足条件的每一项存储到新的数组（arr）当中
-        return v.airline_name === value;
-      });
-      // 将数据通过$emit传给父组件
-      this.$emit("setDataList", arr);
-
-      // 使用vuex将数据存储在vuex中
-      //   this.$store.commit("flights/setDataList", arr);
+    //   // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
+    //   const arr = this.data.flights.filter(v => {
+    //     // 将以下满足条件的每一项存储到新的数组（arr）当中
+    //     return v.airline_name === value;
+    //   });
+    //   // 将数据通过$emit传给父组件
+    //   this.$emit("setDataList", arr);
     },
 
     // 选择机型时候触发
     handleAirSize(value) {
-      console.log(this.data.flights, value);
-      if (!value) {
-        this.$emit("setDataList",false);
-        return;
-      }
-      // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
-      const arr = this.data.flights.filter(v => {
-        // 将以下满足条件的每一项存储到新的数组（arr）当中
-        return v.plane_size === value;
-      });
-      console.log(arr);
+      if(!value){
+          this.newCondition.plane_size = ""
+          return
+        }
+        this.newCondition.plane_size = value
+        console.log("机型",this.newCondition);
+      // if (!value) {
+      //   this.$emit("setDataList",false);
+      //   return;
+      // }
+      // // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
+      // const arr = this.data.flights.filter(v => {
+      //   // 将以下满足条件的每一项存储到新的数组（arr）当中
+      //   return v.plane_size === value;
+      // });
+      // console.log(arr);
 
-      // 将数据通过$emit传给父组件
-      this.$emit("setDataList", arr);
+      // // 将数据通过$emit传给父组件
+      // this.$emit("setDataList", arr);
     },
 
     // 撤销条件时候触发

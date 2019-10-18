@@ -40,7 +40,7 @@
                             <span>{{seat.group_name}}</span> | {{seat.supplierName}}
                         </el-col>
                         <el-col :span="5" class="price">
-                            ￥{{seat.org_settle_price}}
+                            ￥{{seat.settle_price}}
                         </el-col>
                         <el-col :span="3" class="choose-button">
                             <nuxt-link :to="`/air/order?id=${item.id}&seat_xid=${seat.seat_xid}`">
@@ -94,7 +94,9 @@ export default {
             }
             const dis = arrVal - depVal         // 计算分钟差
             // dis / 6取得小时数，向下取整得整数，  dis % 6得到剩余的分钟数，return回这个字符串打印在页面上
-            return `${Math.floor(dis / 60)}时${dis % 6}分`     
+            const time = `${Math.floor(dis / 60)}时${dis % 6}分`
+            return time
+              
         }
     },
 

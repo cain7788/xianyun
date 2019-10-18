@@ -3,12 +3,13 @@
         <el-row type="flex" justify="space-between">
             <!-- 订单表单 -->
             <div class="main">
-                <OrderForm/>
+                <OrderForm @setAllPrice="setAllPrice"/>
             </div>
 
             <!-- 侧边栏 -->
             <div class="aside">
-                          
+               <OrderAside :allPrice="allPrice"/>
+               <!-- {{allPrice}} -->
             </div>
         </el-row>
     </div>
@@ -16,9 +17,22 @@
 
 <script>
 import OrderForm from '@/components/air/orderForm'
+import OrderAside from '@/components/air/orderAside'
 export default {
     components:{
         OrderForm,
+        OrderAside
+    },
+    data(){
+        return {
+            allPrice:0
+        }
+    },
+
+    methods:{
+        setAllPrice(price){
+            this.allPrice = price
+        }
     }
 }
 </script>
