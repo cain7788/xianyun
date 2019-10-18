@@ -27,11 +27,12 @@
 </template>
 
 <script>
-import QrCode from "qrcode";
+// import QrCode from "qrcode";
 export default {
   data() {
     return {
-      order: 0
+      order: 0,
+      timer: null
     };
   },
   mounted() {
@@ -55,13 +56,47 @@ export default {
       //   QrCode.toCanvas(canvas, this.order.payInfo.code_url, {
       //     width: 200
       //   });
-      
+
       // 第二种获取到数据后将链接生成二维码
       new QRCode(
         document.getElementById("qrcode"),
         this.order.payInfo.code_url
       );
+
+      //   查询支付情况:需要每隔几秒自动请求，通过返回的res判断用户是否已经付款
+      // 添加定时器
+      this.timer = setInterval(async () => {
+        const res = await this.$axios({
+          url: "/airorders/checkpay",
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+          },
+          data: {
+            id: this.$route.query.id,
+            nonce_str: this.order.price,
+            out_trade_no: this.order.orderNo
+          }
+        });
+
+        // 请求完毕后，判断支付状态
+        // 获取到返回的提示
+        const { statusTxt } = res.data;
+        if (statusTxt === "支付完成") {
+          // 支付成功之后停止定时器
+          this.$message.success(statusTxt);
+          clearInterval(this.timer);
+        }
+      }, 3000);
+
     }, 20);
+  },
+
+  // 当我们离开这个页面的时候，便会调用这个函数(结束生命周期)
+  // 组件销毁时候使用的，一般情况下用于清除定时器
+  destroyed() {
+    // 结束生命周期的时候停止定时器
+    clearInterval(this.timer);
   },
 
   filters: {
