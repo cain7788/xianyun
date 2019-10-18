@@ -1,16 +1,19 @@
 <template>
   <div class="container">
+    <script src="/QrCode.js"></script>
     <div class="main">
       <div class="pay-title">
         支付总金额
-        <span class="pay-price">￥ {{order.price}}</span>
+        <span class="pay-price">￥{{order.price | numFilter}}</span>
       </div>
       <div class="pay-main">
         <h4>微信支付</h4>
         <el-row type="flex" justify="space-between" align="middle" class="pay-qrcode">
           <div class="qrcode">
             <!-- 二维码，调用Qrcode插件的html代码 -->
-            <canvas id="qrcode-stage"></canvas>
+            <!-- <canvas id="qrcode-stage"></canvas> -->
+            <!-- 第二种方法 -->
+            <div id="qrcode"></div>
             <p>请使用微信扫一扫</p>
             <p>扫描二维码支付</p>
           </div>
@@ -24,7 +27,7 @@
 </template>
 
 <script>
-import QrCode from "qrcode"
+import QrCode from "qrcode";
 export default {
   data() {
     return {
@@ -32,51 +35,40 @@ export default {
     };
   },
   mounted() {
-
     // 将vuex中的机票总价获取到,使用vuex取机票价格的方法
     // this.allPrice = this.$store.state.order.allPrice;
-    const {id} = this.$route.query
+    const { id } = this.$route.query;
     // vuex中的信息存储调用都是需要时间的，而渲染数据的速度大于读取的速度就会导致取到的数据为undefined
     // 所以要使用定时器给获取数据过程一点时间
     setTimeout(async () => {
-        const res = await this.$axios({
-        url:"/airorders/" + id,
+      const res = await this.$axios({
+        url: "/airorders/" + id,
         headers: {
-            Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
-        },
-    })
-        // 结果中的payInfo字段就是付款链接，需要根据链接生成二维码
-        this.order = res.data
-        
-        // 获取到数据后将链接生成二维码
-        const canvas  = document.querySelector("#qrcode-stage")
-        QrCode.toCanvas(canvas ,this.order.payInfo.code_url,{
-            width:200
-        })
+          Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+        }
+      });
+      // 结果中的payInfo字段就是付款链接，需要根据链接生成二维码
+      this.order = res.data;
 
-
-    // 将二维码渲染出来：需要调用二维码生成的插件。
-
-
-
+      // 第一种：将二维码渲染出来：需要调用二维码生成的插件。
+      //   const canvas = document.querySelector("#qrcode-stage");
+      //   QrCode.toCanvas(canvas, this.order.payInfo.code_url, {
+      //     width: 200
+      //   });
+      
+      // 第二种获取到数据后将链接生成二维码
+      new QRCode(
+        document.getElementById("qrcode"),
+        this.order.payInfo.code_url
+      );
     }, 20);
-    
-    
-    // const data = {  
-    //     amount:this.allPrice,
-    //     order_no:+this.$route.query.id
-    // }
-    // this.$axios({
-    //   url: "/airorders/pay",
-    //   headers: {
-    //     Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
-    //   },
-    //   method:"POST",
-    //   data
-    // }).then(res=>{
-    //     console.log(res);
-        
-    // })
+  },
+
+  filters: {
+    numFilter(value) {
+      // 截取当前数据到小数点后两位
+      return parseFloat(value).toFixed(2);
+    }
   }
 };
 </script>
