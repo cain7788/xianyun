@@ -8,13 +8,7 @@
         {{data.info.departDate}}
       </el-col>
       <el-col :span="4">
-        <el-select
-          size="mini"
-          v-model="airport"
-          placeholder="起飞机场"
-          @change="handleAirport"
-          clearable
-        >
+        <el-select size="mini" v-model="filters.airport" placeholder="起飞机场" clearable>
           <el-option
             v-for="(item,index) in data.options.airport"
             :key="index"
@@ -24,13 +18,7 @@
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-select
-          size="mini"
-          v-model="flightTimes"
-          placeholder="起飞时间"
-          @change="handleFlightTimes"
-          clearable
-        >
+        <el-select size="mini" v-model="filters.flightTimes" placeholder="起飞时间" clearable>
           <el-option
             v-for="(item,index) in data.options.flightTimes"
             :key="index"
@@ -40,13 +28,7 @@
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-select
-          size="mini"
-          v-model="company"
-          placeholder="航空公司"
-          @change="handleCompany"
-          clearable
-        >
+        <el-select size="mini" v-model="filters.company" placeholder="航空公司" clearable>
           <el-option
             v-for="(item,index) in data.options.company"
             :key="index"
@@ -56,7 +38,7 @@
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-select size="mini" v-model="airSize" placeholder="机型" @change="handleAirSize" clearable>
+        <el-select size="mini" v-model="filters.airSize" placeholder="机型" clearable>
           <el-option
             v-for="(item,index) in sizeOptions"
             :key="index"
@@ -70,7 +52,6 @@
       筛选：
       <el-button type="primary" round plain size="mini" @click="handleFiltersCancel">撤销</el-button>
     </div>
-    <input type="hidden" :value="newCondition" />
   </div>
 </template>
 
@@ -92,168 +73,78 @@ export default {
 
   data() {
     return {
-      airport: "", // 机场
-      flightTimes: "", // 出发时间
-      company: "", // 航空公司
-      airSize: "", // 机型大小
+      filters: {
+        airport: "", // 机场
+        flightTimes: "", // 出发时间
+        company: "", // 航空公司
+        airSize: "" // 机型大小
+      },
+
       sizeOptions: [
         { size: "L", name: "大" },
         { size: "M", name: "中" },
         { size: "S", name: "小" }
-      ],
+      ]
 
-      condition: {
-        org_airport_name: "", // 机场
-        dep_time: [], // 出发时间
-        airline_name: "", // 航空公司
-        plane_size: "" // 机型大小
-      }
+      // condition: {
+      //   airport:{name:"org_airport_name",value:""}, // 机场
+      //   flightTimes: {name:"dep_time",value:[]}, // 出发时间
+      //   company:{name:"airline_name",value:""}, // 航空公司
+      //   airSize: {name:"plane_size",value:""} // 机型大小
+      // }
     };
   },
+
   mounted() {},
-  computed: {
-    newCondition() {
-      if (this.condition.dep_time.length === 0) {
-        // const {dep_time,...props} = this.condition
-        // console.log(this.data.flights);
-        const arr = this.data.flights.filter(v => {
-            return (this.condition.org_airport_name === v.org_airport_name && this.condition.airline_name === v.airline_name && this.condition.plane_size === v.plane_size)
-        });
-        console.log("123",arr);
-        return arr;
-      } else {
-        const [from, to] = this.condition.dep_time.split(",");
+  watch: {
+    filters: {
+      deep: true,
+      handler() {
+        console.log(this.filters);
 
-        const timeArr = this.data.flights.filter(v => {
-          const start = +v.dep_time.split(":")[0];
-          return start >= from && start < to;
+        // 要统一实现四个条件的过滤
+        // 开关思想：先假设所有的数据都符合条件，在筛选出不符合条件的数据
+        var arr = this.data.flights.filter(v => {
+          // 首先假设所有的数据都是符合条件的
+          var valid = true;
+
+          // 执行思路：判断当前这条数据。  先判断筛选条件是否存在，再判断这个值是否等于当前数据中对应的值，如果不相等，则
+          // valid为false，则当天这条数据不会添加到arr当中
+          // 判断机场
+          if (
+            this.filters.airport &&
+            this.filters.airport !== v.org_airport_name
+          ) {
+            valid = false;
+          }
+
+          // 判断时间
+          if (this.filters.flightTimes) {
+            const start = +v.dep_time.split(":")[0];
+            const arr = this.filters.flightTimes.split(",");
+            if (start < +arr[0] || start >= +arr[1]) {
+              valid = false;
+            }
+          }
+
+          // 判断航空公司
+          if (this.filters.company && this.filters.company !== v.airline_name) {
+            valid = false;
+          }
+
+          // 判断机型
+          if (this.filters.airSize && this.filters.airSize !== v.plane_size) {
+            valid = false;
+          }
+
+          return valid;
         });
-        // timeArr是已经通过时间筛选过后的数组数据
-        const arr = this.data.flights.filter(v => {
-          return (
-            timeArr.org_airport_name === v.org_airport_name &&
-            timeArr.airline_name === v.airline_name &&
-            timeArr.plane_size === v.plane_size
-          );
-        });
-        console.log("456",arr);
-        
-        return arr;
+
+        this.$emit("setDataList", arr);
       }
-      
-      return arr;
-      // deep:true,
-      // handler:function(){
-
-      // var obj = {}
-      // for(var key in this.newCondition){
-      //   console.log(key,this.newCondition[key]);
-      //   obj={...obj,key:this.newCondition.key}
-      //   // if(this.newCondition[key]){
-      //   //     obj={...obj,key:this.newCondition.key}
-      //   // }
-      // }
-
-      // const arr = this.newCondition.filter(item => {
-      //   // v中有四项数据org_airport_name，airline_name
-
-      //   return
-
-      // })
     }
   },
   methods: {
-    // 选择机场时候触发
-    handleAirport(value) {
-      // if(!value){
-      //   this.newCondition.org_airport_name = ""
-      //   return
-      // }
-      this.condition.org_airport_name = value;
-      console.log(this.condition);
-
-      // if (!value) {
-      //   this.$emit("setDataList",false);
-      //   return;
-      // }
-      // // 循环遍历传过来的航班信息列表，找到机场相同的航班信息存储在新的数组当中，最后将这个数组返回给父组件，替换掉要渲染的数组
-      // const arr = this.data.flights.filter(v => {
-      //   // 将以下满足条件的每一项存储到新的数组（arr）当中
-      //   return v.org_airport_name === value;
-      // });
-      // // 将数据通过$emit传给父组件
-      // this.$emit("setDataList", arr);
-    },
-
-    // 选择出发时间时候触发
-    handleFlightTimes(value) {
-      // if(!value){
-      //     return
-      //   }
-      this.condition.dep_time = value;
-
-      // if (!value) {
-      //   this.$emit("setDataList",false);
-      //   return;
-      // }
-      // // console.log(value); // [6.12]
-      // // 将value中的两个时间解构出来
-      // const [from, to] = value.split(",");
-
-      // const arr = this.data.flights.filter(v => {
-      //   const start = +v.dep_time.split(":")[0];
-      //   return start >= from && start < to;
-      // });
-      // this.$emit("setDataList", arr);
-    },
-
-    // 选择航空公司时候触发
-    handleCompany(value) {
-      // if(!value){
-      //     this.newCondition.airline_name = ""
-      //     return
-      //   }
-      this.condition.airline_name = value;
-      console.log("公司", this.condition);
-
-      //  if (!value) {
-      //     this.$emit("setDataList",false);
-      //     return;
-      //   }
-
-      //   // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
-      //   const arr = this.data.flights.filter(v => {
-      //     // 将以下满足条件的每一项存储到新的数组（arr）当中
-      //     return v.airline_name === value;
-      //   });
-      //   // 将数据通过$emit传给父组件
-      //   this.$emit("setDataList", arr);
-    },
-
-    // 选择机型时候触发
-    handleAirSize(value) {
-      // if(!value){
-      //     this.newCondition.plane_size = ""
-      //     return
-      //   }
-      this.condition.plane_size = value;
-      console.log("机型", this.condition);
-
-      // if (!value) {
-      //   this.$emit("setDataList",false);
-      //   return;
-      // }
-      // // 利用相同的方法将航空公司的数据进行筛选，选出新数组传给父组件
-      // const arr = this.data.flights.filter(v => {
-      //   // 将以下满足条件的每一项存储到新的数组（arr）当中
-      //   return v.plane_size === value;
-      // });
-      // console.log(arr);
-
-      // // 将数据通过$emit传给父组件
-      // this.$emit("setDataList", arr);
-    },
-
     // 撤销条件时候触发
     handleFiltersCancel() {
       this.airport = "";
